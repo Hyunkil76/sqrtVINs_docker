@@ -78,16 +78,7 @@ This mode is useful when running multiple datasets or scripts manually inside th
 
 ### 1. Create a New Container
 
-docker run -it \
-  --name sqrt_sequence \
-  -e DISPLAY=$DISPLAY \
-  -e QT_X11_NO_MITSHM=1 \
-  -v /tmp/.X11-unix:/tmp/.X11-unix \
-  -v /your_folder/sqrt_ws/src:/sqrt_ws/src \
-  -v /your_folder/result:/result \
-  -v /your_dataset:/dataset \
-  --device /dev/dri \
-  sqrt_vins_20_04:latest
+docker run -it --name sqrt_sequence -e DISPLAY=$DISPLAY -e QT_X11_NO_MITSHM=1 -v /tmp/.X11-unix:/tmp/.X11-unix -v /your_folder/sqrt_ws/src:/sqrt_ws/src -v /your_folder/result:/result -v /your_dataset:/dataset --device /dev/dri sqrt_vins_20_04:latest
 
 Replace the following paths with your actual paths:
 

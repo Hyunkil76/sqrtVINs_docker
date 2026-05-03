@@ -1,0 +1,74 @@
+%YAML:1.0
+
+imu0:
+  T_i_b:
+    - [1.0, 0.0, 0.0, 0.0]
+    - [0.0, 1.0, 0.0, 0.0]
+    - [0.0, 0.0, 1.0, 0.0]
+    - [0.0, 0.0, 0.0, 1.0]
+  #========= left imu (calibrated one)
+  # accelerometer_noise_density: 0.00242
+  # accelerometer_random_walk: 0.00121
+  # gyroscope_noise_density: 0.000232
+  # gyroscope_random_walk: 7.14e-05
+  
+  # inflated one
+  # accelerometer_noise_density: 0.00484
+  # accelerometer_random_walk: 0.0121
+  # gyroscope_noise_density: 0.00464
+  # gyroscope_random_walk: 7.14e-03
+
+  # https://facebookresearch.github.io/projectaria_tools/docs/tech_insights/imu_noise_model
+  #========= left imu
+  # accelerometer_noise_density: 9.0e-7
+  # accelerometer_random_walk: 2.8e-4
+  # gyroscope_noise_density: 5.0e-3
+  # gyroscope_random_walk: 1.3e-3
+
+  # inflated one
+  # accelerometer_noise_density: 9.0e-3
+  # accelerometer_random_walk: 2.8e-3
+  # gyroscope_noise_density: 5.0e-3
+  # gyroscope_random_walk: 1.3e-3
+
+  #========= right imu
+  # accelerometer_noise_density: 8.0e-7
+  # accelerometer_random_walk: 3.5e-4
+  # gyroscope_noise_density: 1.0e-2
+  # gyroscope_random_walk: 0.6e-3
+
+  accelerometer_noise_density: 0.02
+  accelerometer_random_walk: 0.001
+  gyroscope_noise_density: 0.001
+  gyroscope_random_walk: 0.00005
+  model: calibrated
+  rostopic: /rtimulib_node/imu
+  time_offset: 0.0
+  update_rate: 200.0
+
+  # how to get from Kalibr imu.yaml result file:
+  #   - Tw is imu0:gyroscopes:M:
+  #   - R_IMUtoGYRO: is imu0:gyroscopes:M:
+  #   - Ta is imu0:accelerometers:M:
+  #   - R_IMUtoACC not used by Kalibr
+  #   - Tg is imu0:gyroscopes:A:
+  Tw:
+    - [ 1.0, 0.0, 0.0 ]
+    - [ 0.0, 1.0, 0.0 ]
+    - [ 0.0, 0.0, 1.0 ]
+  R_IMUtoGYRO:
+    - [ 1.0, 0.0, 0.0 ]
+    - [ 0.0, 1.0, 0.0 ]
+    - [ 0.0, 0.0, 1.0 ]
+  Ta:
+    - [ 1.0, 0.0, 0.0 ]
+    - [ 0.0, 1.0, 0.0 ]
+    - [ 0.0, 0.0, 1.0 ]
+  R_IMUtoACC:
+    - [ 1.0, 0.0, 0.0 ]
+    - [ 0.0, 1.0, 0.0 ]
+    - [ 0.0, 0.0, 1.0 ]
+  Tg:
+    - [ 0.0, 0.0, 0.0 ]
+    - [ 0.0, 0.0, 0.0 ]
+    - [ 0.0, 0.0, 0.0 ]

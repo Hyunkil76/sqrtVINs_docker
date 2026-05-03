@@ -1,9 +1,9 @@
-# SQRT-VINS Docker Environment
+# SqrtVINS Docker Environment
 
 This guide explains how to run the project using Docker Compose with GUI support and how to run sequence-based experiments inside a Docker container.
 
 ---
-
+```text
 ## Recommended Folder Tree
 
 sqrt_docker
@@ -33,7 +33,7 @@ sqrt_docker
 │           └── ...
 └── sqrt_ws
     └── ...
-
+```
 ---
 
 ## Single Run

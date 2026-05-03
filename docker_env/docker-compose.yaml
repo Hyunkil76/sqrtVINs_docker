@@ -1,0 +1,78 @@
+version: "2.4"
+
+services:
+  container1:
+    image: sqrt_vins_20_04:latest
+    container_name: container1
+    command: ["bash", "-c", "roscore"]
+    network_mode: host
+    environment:
+      DISPLAY: "${DISPLAY}"
+      QT_X11_NO_MITSHM: "1"
+      XAUTHORITY: "/root/.Xauthority"
+      LIBGL_ALWAYS_INDIRECT: "0"
+    devices:
+      - "/dev/dri:/dev/dri"
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+      - "${HOME}/.Xauthority:/root/.Xauthority"
+    tty: true
+    stdin_open: true
+    healthcheck:
+      test: ["CMD-SHELL", "sleep 1"]   # simple always-healthy check
+      interval: 2s
+      timeout: 2s
+      retries: 1
+
+  container2:
+    image: sqrt_vins_20_04:latest
+    container_name: container2
+    depends_on:
+      container1:
+        condition: service_healthy
+    command: ["bash", "-c", "rosrun rviz rviz -d /sqrt_ws/src/sqrtVINS/ov_srvins/launch/display.rviz"]
+    network_mode: host
+    environment:
+      DISPLAY: "${DISPLAY}"
+      QT_X11_NO_MITSHM: "1"
+      XAUTHORITY: "/root/.Xauthority"
+      LIBGL_ALWAYS_INDIRECT: "0"
+    devices:
+      - "/dev/dri:/dev/dri"
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+      - "${HOME}/.Xauthority:/root/.Xauthority"
+      - "${CATKIN_WS}:/sqrt_ws"
+    tty: true
+    stdin_open: true
+    healthcheck:
+      test: ["CMD-SHELL", "sleep 1"]
+      interval: 2s
+      timeout: 2s
+      retries: 1
+
+  container3:
+    image: sqrt_vins_20_04:latest
+    container_name: container3
+    depends_on:
+      container2:
+        condition: service_healthy
+    command: ["bash", "-c", "cd /sqrt_ws && catkin build && source /sqrt_ws/devel/setup.bash && roslaunch ov_srvins serial.launch config:=${CONFIG} bag:=${BAG}/${DATASET}.bag path_est:=/results/${CONFIG}/${DATASET}/traj_estimate.txt path_time:=/results/${CONFIG}/${DATASET}/traj_timing.txt bag_start:=${BAG_START} max_cameras:=${MAX_CAMERAS} use_stereo:=${USE_STEREO} histogram_method:=${HISTGRAM_METHOD} init_dyn_use:=${INIT_DNY_USE}"]
+
+    network_mode: host
+    environment:
+      DISPLAY: "${DISPLAY}"
+      QT_X11_NO_MITSHM: "1"
+      XAUTHORITY: "/root/.Xauthority"
+      LIBGL_ALWAYS_INDIRECT: "0"
+    devices:
+      - "/dev/dri:/dev/dri"
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+      - "${HOME}/.Xauthority:/root/.Xauthority"
+      - "${DOCKER_DATASETS}:/datasets"
+      - "${RESULT_PATH}:/results"
+      - "${CATKIN_WS}:/sqrt_ws"
+    tty: true
+    stdin_open: true
+

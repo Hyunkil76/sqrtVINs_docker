@@ -1,7 +1,7 @@
 #!/bin/bash
 
-CONFIG=grand_tour_stereo
-BAG="/dataset/grand_tour/group_1"
+CONFIG=uzhfpv_indoor_45
+BAG="/dataset/uzhfpv/indoor_45"
 RESULT_ROOT="/result/stereo"
 
 # Common launch options
@@ -10,8 +10,8 @@ USE_STEREO=true
 BAG_STARTS=(0.0 0.0 0.0 0.0 0.0) 
 
 # Per-dataset options
-HISTOGRAM_METHODS=(HISTOGRAM HISTOGRAM HISTOGRAM CLAHE CLAHE)  # [HISTOGRAM or CLAHE]
-INIT_DYN_USES=(false false false false true)
+HISTOGRAM_METHODS=(HISTOGRAM HISTOGRAM HISTOGRAM HISTOGRAM HISTOGRAM)  # [HISTOGRAM or CLAHE]
+INIT_DYN_USES=(false false false false false)
 
 # Get bag files in order
 BAG_FILES=($(ls ${BAG}/*.bag | sort -V))

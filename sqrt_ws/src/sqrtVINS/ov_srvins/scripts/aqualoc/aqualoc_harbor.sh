@@ -1,17 +1,17 @@
 #!/bin/bash
 
-CONFIG=grand_tour_stereo
-BAG="/dataset/grand_tour/group_1"
-RESULT_ROOT="/result/stereo"
+CONFIG=aqualoc_harbor
+BAG="/dataset/aqualoc/harbor"
+RESULT_ROOT="/result/mono"
 
 # Common launch options
-MAX_CAMERAS=2
-USE_STEREO=true
-BAG_STARTS=(0.0 0.0 0.0 0.0 0.0) 
+MAX_CAMERAS=1
+USE_STEREO=false
+BAG_STARTS=(0.0 0.0 0.0 0.0 0.0 0.0 0.0) 
 
 # Per-dataset options
-HISTOGRAM_METHODS=(HISTOGRAM HISTOGRAM HISTOGRAM CLAHE CLAHE)  # [HISTOGRAM or CLAHE]
-INIT_DYN_USES=(false false false false true)
+HISTOGRAM_METHODS=(CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE)
+INIT_DYN_USES=(true true true true true true true)
 
 # Get bag files in order
 BAG_FILES=($(ls ${BAG}/*.bag | sort -V))
@@ -44,7 +44,6 @@ for i in "${!BAG_FILES[@]}"; do
 
     HISTOGRAM_METHOD="${HISTOGRAM_METHODS[$i]}"
     INIT_DYN_USE="${INIT_DYN_USES[$i]}"
-    
 
     RESULT_DIR="${RESULT_ROOT}/${CONFIG}/${DATASET}"
     mkdir -p "${RESULT_DIR}"

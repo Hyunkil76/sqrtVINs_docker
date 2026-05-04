@@ -1,17 +1,17 @@
 #!/bin/bash
 
-CONFIG=grand_tour_stereo
-BAG="/dataset/grand_tour/group_1"
-RESULT_ROOT="/result/stereo"
+CONFIG=uzhfpv_outdoor
+BAG="/dataset/uzhfpv/outdoor_front"
+RESULT_ROOT="/result/mono"
 
 # Common launch options
-MAX_CAMERAS=2
-USE_STEREO=true
-BAG_STARTS=(0.0 0.0 0.0 0.0 0.0) 
+MAX_CAMERAS=1
+USE_STEREO=false
+BAG_STARTS=(0.0 0.0 0.0) 
 
 # Per-dataset options
-HISTOGRAM_METHODS=(HISTOGRAM HISTOGRAM HISTOGRAM CLAHE CLAHE)  # [HISTOGRAM or CLAHE]
-INIT_DYN_USES=(false false false false true)
+HISTOGRAM_METHODS=(HISTOGRAM HISTOGRAM HISTOGRAM)  # [HISTOGRAM or CLAHE]
+INIT_DYN_USES=(false false false)
 
 # Get bag files in order
 BAG_FILES=($(ls ${BAG}/*.bag | sort -V))

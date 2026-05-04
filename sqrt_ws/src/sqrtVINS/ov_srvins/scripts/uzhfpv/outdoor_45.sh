@@ -1,15 +1,17 @@
-CONFIG=aqualoc_harbor
-BAG="/dataset/aqualoc/harbor"
-RESULT_ROOT="/result"
+#!/bin/bash
+
+CONFIG=uzhfpv_outdoor_45
+BAG="/dataset/uzhfpv/outdoor_45"
+RESULT_ROOT="/result/mono"
 
 # Common launch options
-BAG_START=0.0
 MAX_CAMERAS=1
 USE_STEREO=false
+BAG_STARTS=(0.0) 
 
 # Per-dataset options
-HISTOGRAM_METHODS=(CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE)
-INIT_DYN_USES=(true true true true true true true)
+HISTOGRAM_METHODS=(CLAHE)  # [HISTOGRAM or CLAHE]
+INIT_DYN_USES=(false)
 
 # Get bag files in order
 BAG_FILES=($(ls ${BAG}/*.bag | sort -V))
@@ -27,14 +29,22 @@ if [ ${#BAG_FILES[@]} -ne ${#INIT_DYN_USES[@]} ]; then
     exit 1
 fi
 
+if [ ${#BAG_FILES[@]} -ne ${#BAG_STARTS[@]} ]; then
+    echo "Error: number of bag files and BAG_STARTS does not match"
+    echo "bags: ${#BAG_FILES[@]}, bag_starts: ${#BAG_STARTS[@]}"
+    exit 1
+fi
+
 for i in "${!BAG_FILES[@]}"; do
     BAG_FILE="${BAG_FILES[$i]}"
+    BAG_START="${BAG_STARTS[$i]}"
 
     # Dataset name without .bag
     DATASET=$(basename "$BAG_FILE" .bag)
 
     HISTOGRAM_METHOD="${HISTOGRAM_METHODS[$i]}"
     INIT_DYN_USE="${INIT_DYN_USES[$i]}"
+    
 
     RESULT_DIR="${RESULT_ROOT}/${CONFIG}/${DATASET}"
     mkdir -p "${RESULT_DIR}"

@@ -95,8 +95,8 @@ init_dyn_use: true # if dynamic initialization should be used
 init_dyn_num_pose: 5 # number of poses to use within our window time
 init_dyn_min_deg: -1 # orientation change needed to try to init
 
-init_dyn_bias_g: [ 0.0018231654457, 0.0045035208162, 0.0000437172026 ] # initial gyroscope bias guess
-init_dyn_bias_a: [ 0.0105140055930, -0.0588423422616, 0.0475782540341 ] # initial accelerometer bias guess
+init_dyn_bias_g: [ 0.0037596101048, 0.0020570239723, -0.0014162632158 ] # initial gyroscope bias guess
+init_dyn_bias_a: [ 0.2465799209137, 0.2121648986084, 0.3942864267258 ] # initial accelerometer bias guess
 
 # ==================================================================
 # ==================================================================

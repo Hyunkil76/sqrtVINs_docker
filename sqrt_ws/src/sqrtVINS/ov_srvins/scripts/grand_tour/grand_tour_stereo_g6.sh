@@ -1,6 +1,8 @@
+#!/bin/bash
+
 CONFIG=grand_tour_stereo
 BAG="/dataset/grand_tour/group_6"
-RESULT_ROOT="/result"
+RESULT_ROOT="/result/stereo"
 
 # Common launch options
 MAX_CAMERAS=2
@@ -24,6 +26,12 @@ fi
 if [ ${#BAG_FILES[@]} -ne ${#INIT_DYN_USES[@]} ]; then
     echo "Error: number of bag files and INIT_DYN_USES does not match"
     echo "bags: ${#BAG_FILES[@]}, init_dyn_uses: ${#INIT_DYN_USES[@]}"
+    exit 1
+fi
+
+if [ ${#BAG_FILES[@]} -ne ${#BAG_STARTS[@]} ]; then
+    echo "Error: number of bag files and BAG_STARTS does not match"
+    echo "bags: ${#BAG_FILES[@]}, bag_starts: ${#BAG_STARTS[@]}"
     exit 1
 fi
 

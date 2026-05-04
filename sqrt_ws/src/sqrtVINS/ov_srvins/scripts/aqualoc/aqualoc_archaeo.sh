@@ -1,11 +1,13 @@
+#!/bin/bash
+
 CONFIG=aqualoc_archaeo
 BAG="/dataset/aqualoc/archaeo"
-RESULT_ROOT="/result"
+RESULT_ROOT="/result/mono"
 
 # Common launch options
-BAG_START=0.0
 MAX_CAMERAS=1
 USE_STEREO=false
+BAG_STARTS=(0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0) 
 
 # Per-dataset options
 HISTOGRAM_METHODS=(CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE)
@@ -27,8 +29,15 @@ if [ ${#BAG_FILES[@]} -ne ${#INIT_DYN_USES[@]} ]; then
     exit 1
 fi
 
+if [ ${#BAG_FILES[@]} -ne ${#BAG_STARTS[@]} ]; then
+    echo "Error: number of bag files and BAG_STARTS does not match"
+    echo "bags: ${#BAG_FILES[@]}, bag_starts: ${#BAG_STARTS[@]}"
+    exit 1
+fi
+
 for i in "${!BAG_FILES[@]}"; do
     BAG_FILE="${BAG_FILES[$i]}"
+    BAG_START="${BAG_STARTS[$i]}"
 
     # Dataset name without .bag
     DATASET=$(basename "$BAG_FILE" .bag)

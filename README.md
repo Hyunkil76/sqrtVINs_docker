@@ -49,8 +49,11 @@ Update all paths and dataset settings in the .env file to match your local syste
 Example:
 
 SQRT_WS_PATH=/your_folder/sqrt_ws
+
 RESULT_PATH=/your_folder/result
+
 DATASET_PATH=/your_dataset
+
 
 ### 3. Open a Terminal in This Folder
 
@@ -68,7 +71,7 @@ docker compose up
 
 ### 6. Stop the Containers
 
-docker compose down
+docker compose stop
 
 ---
 

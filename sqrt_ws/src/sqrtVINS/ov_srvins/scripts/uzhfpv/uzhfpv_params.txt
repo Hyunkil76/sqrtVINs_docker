@@ -1,0 +1,20 @@
+# dataset_name:bag_start:histogram_method:init_dyn_use
+# Indoor front
+indoor_forward_3_snapdragon_with_gt:0.0:HISTOGRAM:true
+indoor_forward_5_snapdragon_with_gt:0.0:HISTOGRAM:true
+indoor_forward_6_snapdragon_with_gt:0.0:HISTOGRAM:true
+indoor_forward_7_snapdragon_with_gt:0.0:HISTOGRAM:true
+indoor_forward_9_snapdragon_with_gt:0.0:HISTOGRAM:true
+indoor_forward_10_snapdragon_with_gt:0.0:HISTOGRAM:true
+# Indoor 45
+indoor_45_2_snapdragon_with_gt:0.0:HISTOGRAM:false
+indoor_45_4_snapdragon_with_gt:0.0:HISTOGRAM:false
+indoor_45_12_snapdragon_with_gt:0.0:HISTOGRAM:false
+indoor_45_13_snapdragon_with_gt:0.0:HISTOGRAM:false
+indoor_45_14_snapdragon_with_gt:0.0:HISTOGRAM:false
+# Outdoor front
+outdoor_forward_1_snapdragon_with_gt:0.0:HISTOGRAM:false
+outdoor_forward_5_snapdragon_with_gt:0.0:HISTOGRAM:false
+outdoor_forward_5_snapdragon_with_gt:0.0:HISTOGRAM:false
+# Outdoor 45
+outdoor_45_1_snapdragon_with_gt:0.0:CLAHE:false

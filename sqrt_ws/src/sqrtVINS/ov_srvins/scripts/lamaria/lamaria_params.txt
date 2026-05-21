@@ -1,0 +1,27 @@
+# dataset_name:bag_start:histogram_method:init_dyn_use
+# Easy
+R_01_easy:0.0:HISTOGRAM:true
+R_02_easy:0.0:HISTOGRAM:true
+R_03_easy:0.0:HISTOGRAM:true
+# Medium
+R_04_medium:0.0:HISTOGRAM:true
+R_05_medium:0.0:HISTOGRAM:true
+R_06_medium:0.0:HISTOGRAM:true
+R_07_medium:0.0:HISTOGRAM:true
+# Hard
+R_08_hard:0.0:HISTOGRAM:true
+R_09_hard:0.0:CLAHE:true
+R_10_hard:0.0:HISTOGRAM:true
+# CP
+R_11_5cp:0.0:HISTOGRAM:true
+R_12_10cp:0.0:HISTOGRAM:true
+R_13_15cp:0.0:HISTOGRAM:true
+# Add
+sequence_1_19:0.0:HISTOGRAM:true
+sequence_1_20:0.0:HISTOGRAM:true
+sequence_2_11:0.0:HISTOGRAM:true
+sequence_2_12:0.0:HISTOGRAM:true
+sequence_3_17:0.0:HISTOGRAM:true
+sequence_3_18:0.0:HISTOGRAM:true
+sequence_4_10:0.0:CLAHE:true
+sequence_4_11:0.0:HISTOGRAM:true

@@ -1,10 +1,11 @@
 #!/bin/bash
+set -euo pipefail
 
-CONFIG=euroc_mav
-BAG="/dataset/euroc_mav"
+CONFIG=grand_tour
+BAG="/dataset/grand_tour"
 RESULT_ROOT="/result"
 
-PARAM_FILE="./euroc_mav_params.txt"
+PARAM_FILE="./grand_tour_params.txt"
 
 # Common launch options
 MAX_CAMERAS=1

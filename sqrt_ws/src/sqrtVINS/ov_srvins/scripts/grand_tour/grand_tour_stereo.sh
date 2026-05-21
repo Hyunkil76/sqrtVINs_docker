@@ -1,14 +1,15 @@
 #!/bin/bash
+set -euo pipefail
 
-CONFIG=euroc_mav
-BAG="/dataset/euroc_mav"
+CONFIG=grand_tour_stereo
+BAG="/dataset/grand_tour"
 RESULT_ROOT="/result"
 
-PARAM_FILE="./euroc_mav_params.txt"
+PARAM_FILE="./grand_tour_stereo_params.txt"
 
 # Common launch options
-MAX_CAMERAS=1
-USE_STEREO=false
+MAX_CAMERAS=2
+USE_STEREO=true
 
 # Load per-dataset params
 declare -A BAG_START_MAP
@@ -24,7 +25,14 @@ while IFS= read -r line || [[ -n "$line" ]]; do
 
     IFS=':' read -r dataset bag_start histogram_method init_dyn_use <<< "$line"
 
-    if [[ -z "${dataset:-}" || -z "${bag_start:sqrt_ws/src/sqrtVINS/ov_srvins/scripts/euroc_mav/euroc_mav_params.txt
+    if [[ -z "${dataset:-}" || -z "${bag_start:-}" || -z "${histogram_method:-}" || -z "${init_dyn_use:-}" ]]; then
+        echo "Error: invalid params line:"
+        echo "$line"
+        echo "Expected format: dataset_name:bag_start:histogram_method:init_dyn_use"
+        exit 1
+    fi
+
+    BAG_START_MAP["$dataset"]="$bag_start"
     HISTOGRAM_METHOD_MAP["$dataset"]="$histogram_method"
     INIT_DYN_USE_MAP["$dataset"]="$init_dyn_use"
 done < "$PARAM_FILE"
@@ -48,8 +56,8 @@ for BAG_FILE in "${BAG_FILES[@]}"; do
     HISTOGRAM_METHOD="${HISTOGRAM_METHOD_MAP[$DATASET]}"
     INIT_DYN_USE="${INIT_DYN_USE_MAP[$DATASET]}"
 
-    POSE_DIR="${RESULT_ROOT}/pose/sqrtVINs_Mono/${DATASET}"
-    TIME_DIR="${RESULT_ROOT}/time/sqrtVINs_Mono/${DATASET}"
+    POSE_DIR="${RESULT_ROOT}/pose/sqrtVINs_Stereo/${DATASET}"
+    TIME_DIR="${RESULT_ROOT}/time/sqrtVINs_Stereo/${DATASET}"
 
     PATH_EST="${POSE_DIR}/traj_estimate.txt"
     PATH_TIME="${TIME_DIR}/traj_timing.txt"

@@ -1,0 +1,14 @@
+# dataset_name:bag_start:histogram_method:init_dyn_use
+# Machine Hall
+MH_01_easy:40.0:HISTOGRAM:false
+MH_02_easy:0.0:HISTOGRAM:true
+MH_03_medium:5.0:HISTOGRAM:false
+MH_04_difficult:10.0:HISTOGRAM:false
+MH_05_difficult:5.0:HISTOGRAM:false
+# Vicon Room
+V1_01_easy:0.0:HISTOGRAM:false
+V1_02_medium:0.0:HISTOGRAM:false
+V1_03_difficult:0.0:HISTOGRAM:false
+V2_01_easy:0.0:HISTOGRAM:false
+V2_02_medium:0.0:HISTOGRAM:false
+V2_03_difficult:0.0:HISTOGRAM:false

@@ -1,73 +1,92 @@
 #!/bin/bash
 
 CONFIG=uzhfpv_outdoor
-BAG="/dataset/uzhfpv/outdoor_front"
-RESULT_ROOT="/result/mono"
+BAG="/dataset/uzhfpv/uzhfpv_outdoor"
+RESULT_ROOT="/result"
+
+PARAM_FILE="./uzhfpv_params.txt"
 
 # Common launch options
 MAX_CAMERAS=1
 USE_STEREO=false
-BAG_STARTS=(0.0 0.0 0.0) 
 
-# Per-dataset options
-HISTOGRAM_METHODS=(HISTOGRAM HISTOGRAM HISTOGRAM)  # [HISTOGRAM or CLAHE]
-INIT_DYN_USES=(false false false)
+# Load per-dataset params
+declare -A BAG_START_MAP
+declare -A HISTOGRAM_METHOD_MAP
+declare -A INIT_DYN_USE_MAP
+
+while IFS= read -r line || [[ -n "$line" ]]; do
+    # Remove Windows carriage return if present
+    line="${line%$'\r'}"
+
+    # Skip empty lines and comments
+    [[ -z "$line" || "$line" =~ ^# ]] && continue
+
+    IFS=':' read -r dataset bag_start histogram_method init_dyn_use <<< "$line"
+
+    if [[ -z "${dataset:-}" || -z "${bag_start:sqrt_ws/src/sqrtVINS/ov_srvins/scripts/euroc_mav/euroc_mav_params.txt
+    HISTOGRAM_METHOD_MAP["$dataset"]="$histogram_method"
+    INIT_DYN_USE_MAP["$dataset"]="$init_dyn_use"
+done < "$PARAM_FILE"
 
 # Get bag files in order
-BAG_FILES=($(ls ${BAG}/*.bag | sort -V))
+mapfile -t BAG_FILES < <(ls "${BAG}"/*.bag | sort -V)
 
-# Safety check
-if [ ${#BAG_FILES[@]} -ne ${#HISTOGRAM_METHODS[@]} ]; then
-    echo "Error: number of bag files and HISTOGRAM_METHODS does not match"
-    echo "bags: ${#BAG_FILES[@]}, histogram_methods: ${#HISTOGRAM_METHODS[@]}"
-    exit 1
-fi
-
-if [ ${#BAG_FILES[@]} -ne ${#INIT_DYN_USES[@]} ]; then
-    echo "Error: number of bag files and INIT_DYN_USES does not match"
-    echo "bags: ${#BAG_FILES[@]}, init_dyn_uses: ${#INIT_DYN_USES[@]}"
-    exit 1
-fi
-
-if [ ${#BAG_FILES[@]} -ne ${#BAG_STARTS[@]} ]; then
-    echo "Error: number of bag files and BAG_STARTS does not match"
-    echo "bags: ${#BAG_FILES[@]}, bag_starts: ${#BAG_STARTS[@]}"
-    exit 1
-fi
-
-for i in "${!BAG_FILES[@]}"; do
-    BAG_FILE="${BAG_FILES[$i]}"
-    BAG_START="${BAG_STARTS[$i]}"
-
+for BAG_FILE in "${BAG_FILES[@]}"; do
     # Dataset name without .bag
     DATASET=$(basename "$BAG_FILE" .bag)
 
-    HISTOGRAM_METHOD="${HISTOGRAM_METHODS[$i]}"
-    INIT_DYN_USE="${INIT_DYN_USES[$i]}"
-    
+    # Safety check: dataset must exist in params file
+    if [[ -z "${BAG_START_MAP[$DATASET]+x}" ]]; then
+        echo "Error: no BAG_START found for dataset: ${DATASET}"
+        echo "Please add this line to ${PARAM_FILE}:"
+        echo "${DATASET}:0.0:HISTOGRAM:false"
+        exit 1
+    fi
 
-    RESULT_DIR="${RESULT_ROOT}/${CONFIG}/${DATASET}"
-    mkdir -p "${RESULT_DIR}"
+    BAG_START="${BAG_START_MAP[$DATASET]}"
+    HISTOGRAM_METHOD="${HISTOGRAM_METHOD_MAP[$DATASET]}"
+    INIT_DYN_USE="${INIT_DYN_USE_MAP[$DATASET]}"
+
+    POSE_DIR="${RESULT_ROOT}/pose/sqrtVINs_Mono/${DATASET}"
+    TIME_DIR="${RESULT_ROOT}/time/sqrtVINs_Mono/${DATASET}"
+
+    PATH_EST="${POSE_DIR}/traj_estimate.txt"
+    PATH_TIME="${TIME_DIR}/traj_timing.txt"
+
+    # Skip if result already exists
+    if [[ -s "$PATH_EST" && -s "$PATH_TIME" ]]; then
+        echo "=========================================="
+        echo "Skipping dataset: ${DATASET}"
+        echo "Reason: result already exists"
+        echo "Path est: ${PATH_EST}"
+        echo "Path time: ${PATH_TIME}"
+        echo "=========================================="
+        continue
+    fi
+
+    mkdir -p "${POSE_DIR}"
+    mkdir -p "${TIME_DIR}"
 
     echo "=========================================="
     echo "Running dataset: ${DATASET}"
     echo "Bag: ${BAG_FILE}"
+    echo "Bag start: ${BAG_START}"
     echo "Histogram method: ${HISTOGRAM_METHOD}"
     echo "Init dyn use: ${INIT_DYN_USE}"
     echo "Result dir: ${RESULT_DIR}"
     echo "=========================================="
 
-    sleep 1.0
+    sleep 3.0
 
     roslaunch ov_srvins serial.launch \
         config:=${CONFIG} \
         bag:=${BAG_FILE} \
-        path_est:=${RESULT_DIR}/traj_estimate.txt \
-        path_time:=${RESULT_DIR}/traj_timing.txt \
+        path_est:=${PATH_EST} \
+        path_time:=${PATH_TIME} \
         bag_start:=${BAG_START} \
         max_cameras:=${MAX_CAMERAS} \
         use_stereo:=${USE_STEREO} \
         histogram_method:=${HISTOGRAM_METHOD} \
         init_dyn_use:=${INIT_DYN_USE}
-
 done

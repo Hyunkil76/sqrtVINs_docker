@@ -1,10 +1,10 @@
 #!/bin/bash
 
-CONFIG=euroc_mav
-BAG="/dataset/euroc_mav"
+CONFIG=lamaria
+BAG="/dataset/lamaria/medium"
 RESULT_ROOT="/result"
 
-PARAM_FILE="./euroc_mav_params.txt"
+PARAM_FILE="./lamaria_params.txt"
 
 # Common launch options
 MAX_CAMERAS=1

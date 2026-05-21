@@ -1,0 +1,20 @@
+# dataset_name:bag_start:histogram_method:init_dyn_use
+# archaeo
+archaeo_sequence_1:0.0:CLAHE:true
+archaeo_sequence_2:0.0:CLAHE:true
+archaeo_sequence_3:0.0:CLAHE:true
+archaeo_sequence_4:0.0:CLAHE:true
+archaeo_sequence_5:0.0:CLAHE:true
+archaeo_sequence_6:0.0:CLAHE:true
+archaeo_sequence_7:0.0:CLAHE:true
+archaeo_sequence_8:0.0:CLAHE:true
+archaeo_sequence_9:0.0:CLAHE:true
+archaeo_sequence_10:0.0:CLAHE:true
+# harbor
+harbor_sequence_1:0.0:CLAHE:true
+harbor_sequence_2:0.0:CLAHE:true
+harbor_sequence_3:0.0:CLAHE:true
+harbor_sequence_4:0.0:CLAHE:true
+harbor_sequence_5:0.0:CLAHE:true
+harbor_sequence_6:0.0:CLAHE:true
+harbor_sequence_7:0.0:CLAHE:true

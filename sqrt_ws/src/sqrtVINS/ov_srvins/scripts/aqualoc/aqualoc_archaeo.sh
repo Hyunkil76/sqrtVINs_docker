@@ -2,51 +2,45 @@
 
 CONFIG=aqualoc_archaeo
 BAG="/dataset/aqualoc/archaeo"
-RESULT_ROOT="/result/mono"
+RESULT_ROOT="/result"
 
 # Common launch options
 MAX_CAMERAS=1
 USE_STEREO=false
-BAG_STARTS=(0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0) 
+BAG_START=0.0
 
 # Per-dataset options
-HISTOGRAM_METHODS=(CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE CLAHE)
-INIT_DYN_USES=(true true true true true true true true true true)
+HISTOGRAM_METHOD=CLAHE
+INIT_DYN_USE=true
 
 # Get bag files in order
 BAG_FILES=($(ls ${BAG}/*.bag | sort -V))
 
-# Safety check
-if [ ${#BAG_FILES[@]} -ne ${#HISTOGRAM_METHODS[@]} ]; then
-    echo "Error: number of bag files and HISTOGRAM_METHODS does not match"
-    echo "bags: ${#BAG_FILES[@]}, histogram_methods: ${#HISTOGRAM_METHODS[@]}"
-    exit 1
-fi
-
-if [ ${#BAG_FILES[@]} -ne ${#INIT_DYN_USES[@]} ]; then
-    echo "Error: number of bag files and INIT_DYN_USES does not match"
-    echo "bags: ${#BAG_FILES[@]}, init_dyn_uses: ${#INIT_DYN_USES[@]}"
-    exit 1
-fi
-
-if [ ${#BAG_FILES[@]} -ne ${#BAG_STARTS[@]} ]; then
-    echo "Error: number of bag files and BAG_STARTS does not match"
-    echo "bags: ${#BAG_FILES[@]}, bag_starts: ${#BAG_STARTS[@]}"
-    exit 1
-fi
-
 for i in "${!BAG_FILES[@]}"; do
     BAG_FILE="${BAG_FILES[$i]}"
-    BAG_START="${BAG_STARTS[$i]}"
 
     # Dataset name without .bag
     DATASET=$(basename "$BAG_FILE" .bag)
 
-    HISTOGRAM_METHOD="${HISTOGRAM_METHODS[$i]}"
-    INIT_DYN_USE="${INIT_DYN_USES[$i]}"
+    POSE_DIR="${RESULT_ROOT}/pose/sqrtVINs_Mono/${DATASET}"
+    TIME_DIR="${RESULT_ROOT}/time/sqrtVINs_Mono/${DATASET}"
 
-    RESULT_DIR="${RESULT_ROOT}/${CONFIG}/${DATASET}"
-    mkdir -p "${RESULT_DIR}"
+    PATH_EST="${POSE_DIR}/traj_estimate.txt"
+    PATH_TIME="${TIME_DIR}/traj_timing.txt"
+    
+    # Skip if result already exists
+    if [[ -s "$PATH_EST" && -s "$PATH_TIME" ]]; then
+        echo "=========================================="
+        echo "Skipping dataset: ${DATASET}"
+        echo "Reason: result already exists"
+        echo "Path est: ${PATH_EST}"
+        echo "Path time: ${PATH_TIME}"
+        echo "=========================================="
+        continue
+    fi
+
+    mkdir -p "${POSE_DIR}"
+    mkdir -p "${TIME_DIR}"
 
     echo "=========================================="
     echo "Running dataset: ${DATASET}"
@@ -56,7 +50,7 @@ for i in "${!BAG_FILES[@]}"; do
     echo "Result dir: ${RESULT_DIR}"
     echo "=========================================="
 
-    sleep 1.0
+    sleep 3.0
 
     roslaunch ov_srvins serial.launch \
         config:=${CONFIG} \

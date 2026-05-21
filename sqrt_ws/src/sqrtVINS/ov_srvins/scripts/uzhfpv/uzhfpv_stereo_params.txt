@@ -14,7 +14,7 @@ indoor_45_13_snapdragon_with_gt:0.0:HISTOGRAM:false
 indoor_45_14_snapdragon_with_gt:0.0:HISTOGRAM:false
 # Outdoor front
 outdoor_forward_1_snapdragon_with_gt:0.0:HISTOGRAM:false
-outdoor_forward_5_snapdragon_with_gt:0.0:HISTOGRAM:false
+outdoor_forward_3_snapdragon_with_gt:0.0:HISTOGRAM:false
 outdoor_forward_5_snapdragon_with_gt:0.0:HISTOGRAM:false
 # Outdoor 45
 outdoor_45_1_snapdragon_with_gt:0.0:HISTOGRAM:false

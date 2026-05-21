@@ -1,33 +1,68 @@
 #!/bin/bash
+set -euo pipefail
 
 CONFIG=aqualoc_harbor
 BAG="/dataset/aqualoc/harbor"
 RESULT_ROOT="/result"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARAM_FILE="${SCRIPT_DIR}/aqualoc_params.txt"
+
 # Common launch options
 MAX_CAMERAS=1
 USE_STEREO=false
-BAG_START=0.0
 
-# Per-dataset options
-HISTOGRAM_METHOD=CLAHE
-INIT_DYN_USE=true
+# Load per-dataset params
+declare -A BAG_START_MAP
+declare -A HISTOGRAM_METHOD_MAP
+declare -A INIT_DYN_USE_MAP
+
+while IFS= read -r line || [[ -n "$line" ]]; do
+    # Remove Windows carriage return if present
+    line="${line%$'\r'}"
+
+    # Skip empty lines and comments
+    [[ -z "$line" || "$line" =~ ^# ]] && continue
+
+    IFS=':' read -r dataset bag_start histogram_method init_dyn_use <<< "$line"
+
+    if [[ -z "${dataset:-}" || -z "${bag_start:-}" || -z "${histogram_method:-}" || -z "${init_dyn_use:-}" ]]; then
+        echo "Error: invalid params line:"
+        echo "$line"
+        echo "Expected format: dataset_name:bag_start:histogram_method:init_dyn_use"
+        exit 1
+    fi
+
+    BAG_START_MAP["$dataset"]="$bag_start"
+    HISTOGRAM_METHOD_MAP["$dataset"]="$histogram_method"
+    INIT_DYN_USE_MAP["$dataset"]="$init_dyn_use"
+done < "$PARAM_FILE"
 
 # Get bag files in order
-BAG_FILES=($(ls ${BAG}/*.bag | sort -V))
+mapfile -t BAG_FILES < <(ls "${BAG}"/*.bag | sort -V)
 
-for i in "${!BAG_FILES[@]}"; do
-    BAG_FILE="${BAG_FILES[$i]}"
-
+for BAG_FILE in "${BAG_FILES[@]}"; do
     # Dataset name without .bag
     DATASET=$(basename "$BAG_FILE" .bag)
+
+    # Safety check: dataset must exist in params file
+    if [[ -z "${BAG_START_MAP[$DATASET]+x}" ]]; then
+        echo "Error: no BAG_START found for dataset: ${DATASET}"
+        echo "Please add this line to ${PARAM_FILE}:"
+        echo "${DATASET}:0.0:HISTOGRAM:false"
+        exit 1
+    fi
+
+    BAG_START="${BAG_START_MAP[$DATASET]}"
+    HISTOGRAM_METHOD="${HISTOGRAM_METHOD_MAP[$DATASET]}"
+    INIT_DYN_USE="${INIT_DYN_USE_MAP[$DATASET]}"
 
     POSE_DIR="${RESULT_ROOT}/pose/sqrtVINs_Mono/${DATASET}"
     TIME_DIR="${RESULT_ROOT}/time/sqrtVINs_Mono/${DATASET}"
 
     PATH_EST="${POSE_DIR}/traj_estimate.txt"
     PATH_TIME="${TIME_DIR}/traj_timing.txt"
-    
+
     # Skip if result already exists
     if [[ -s "$PATH_EST" && -s "$PATH_TIME" ]]; then
         echo "=========================================="
@@ -45,9 +80,11 @@ for i in "${!BAG_FILES[@]}"; do
     echo "=========================================="
     echo "Running dataset: ${DATASET}"
     echo "Bag: ${BAG_FILE}"
+    echo "Bag start: ${BAG_START}"
     echo "Histogram method: ${HISTOGRAM_METHOD}"
     echo "Init dyn use: ${INIT_DYN_USE}"
-    echo "Result dir: ${RESULT_DIR}"
+    echo "Pose dir: ${POSE_DIR}"
+    echo "Time dir: ${TIME_DIR}"
     echo "=========================================="
 
     sleep 3.0
@@ -55,12 +92,11 @@ for i in "${!BAG_FILES[@]}"; do
     roslaunch ov_srvins serial.launch \
         config:=${CONFIG} \
         bag:=${BAG_FILE} \
-        path_est:=${RESULT_DIR}/traj_estimate.txt \
-        path_time:=${RESULT_DIR}/traj_timing.txt \
+        path_est:=${PATH_EST} \
+        path_time:=${PATH_TIME} \
         bag_start:=${BAG_START} \
         max_cameras:=${MAX_CAMERAS} \
         use_stereo:=${USE_STEREO} \
         histogram_method:=${HISTOGRAM_METHOD} \
         init_dyn_use:=${INIT_DYN_USE}
-
 done

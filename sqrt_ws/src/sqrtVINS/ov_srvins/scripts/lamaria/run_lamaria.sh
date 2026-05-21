@@ -1,26 +1,28 @@
 #!/bin/bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 echo "Easy start"
-bash ./lamaria_easy.sh
+bash "${SCRIPT_DIR}/lamaria_easy.sh"
 
 sleep 1.0
 
 echo "Medium start"
-bash ./lamaria_medium.sh
+bash "${SCRIPT_DIR}/lamaria_medium.sh"
 
 sleep 1.0
 
 echo "Hard start"
-bash ./lamaria_hard.sh
+bash "${SCRIPT_DIR}/lamaria_hard.sh"
 
 sleep 1.0
 
 echo "CP start"
-bash ./lamaria_cp.sh
+bash "${SCRIPT_DIR}/lamaria_cp.sh"
 
 sleep 1.0
 
 echo "Additional start"
-bash ./lamaria_sequence_1.sh
-bash ./lamaria_sequence.sh
+bash "${SCRIPT_DIR}/lamaria_sequence_1.sh"
+bash "${SCRIPT_DIR}/lamaria_sequence.sh"

@@ -1,10 +1,12 @@
 #!/bin/bash
+set -euo pipefail
 
 CONFIG=lamaria
 BAG="/dataset/lamaria/medium"
 RESULT_ROOT="/result"
 
-PARAM_FILE="./lamaria_params.txt"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARAM_FILE="${SCRIPT_DIR}/lamaria_params.txt"
 
 # Common launch options
 MAX_CAMERAS=1
@@ -24,7 +26,14 @@ while IFS= read -r line || [[ -n "$line" ]]; do
 
     IFS=':' read -r dataset bag_start histogram_method init_dyn_use <<< "$line"
 
-    if [[ -z "${dataset:-}" || -z "${bag_start:sqrt_ws/src/sqrtVINS/ov_srvins/scripts/euroc_mav/euroc_mav_params.txt
+    if [[ -z "${dataset:-}" || -z "${bag_start:-}" || -z "${histogram_method:-}" || -z "${init_dyn_use:-}" ]]; then
+        echo "Error: invalid params line:"
+        echo "$line"
+        echo "Expected format: dataset_name:bag_start:histogram_method:init_dyn_use"
+        exit 1
+    fi
+
+    BAG_START_MAP["$dataset"]="$bag_start"
     HISTOGRAM_METHOD_MAP["$dataset"]="$histogram_method"
     INIT_DYN_USE_MAP["$dataset"]="$init_dyn_use"
 done < "$PARAM_FILE"
@@ -74,7 +83,8 @@ for BAG_FILE in "${BAG_FILES[@]}"; do
     echo "Bag start: ${BAG_START}"
     echo "Histogram method: ${HISTOGRAM_METHOD}"
     echo "Init dyn use: ${INIT_DYN_USE}"
-    echo "Result dir: ${RESULT_DIR}"
+    echo "Pose dir: ${POSE_DIR}"
+    echo "Time dir: ${TIME_DIR}"
     echo "=========================================="
 
     sleep 3.0

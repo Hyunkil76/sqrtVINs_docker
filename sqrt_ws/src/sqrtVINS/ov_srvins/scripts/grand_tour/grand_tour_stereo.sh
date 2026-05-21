@@ -5,7 +5,8 @@ CONFIG=grand_tour_stereo
 BAG="/dataset/grand_tour"
 RESULT_ROOT="/result"
 
-PARAM_FILE="./grand_tour_stereo_params.txt"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARAM_FILE="${SCRIPT_DIR}/grand_tour_stereo_params.txt"
 
 # Common launch options
 MAX_CAMERAS=2
@@ -82,7 +83,8 @@ for BAG_FILE in "${BAG_FILES[@]}"; do
     echo "Bag start: ${BAG_START}"
     echo "Histogram method: ${HISTOGRAM_METHOD}"
     echo "Init dyn use: ${INIT_DYN_USE}"
-    echo "Result dir: ${RESULT_DIR}"
+    echo "Pose dir: ${POSE_DIR}"
+    echo "Time dir: ${TIME_DIR}"
     echo "=========================================="
 
     sleep 3.0

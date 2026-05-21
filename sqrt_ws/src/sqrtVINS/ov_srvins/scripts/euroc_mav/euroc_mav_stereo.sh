@@ -26,7 +26,7 @@ while IFS= read -r line || [[ -n "$line" ]]; do
 
     IFS=':' read -r dataset bag_start histogram_method init_dyn_use <<< "$line"
 
-    if [[ -PARAM_FILE="./aqualoc_params.txt"z "${dataset:-}" || -z "${bag_start:-}" || -z "${histogram_method:-}" || -z "${init_dyn_use:-}" ]]; then
+    if [[ -z "${dataset:-}" || -z "${bag_start:-}" || -z "${histogram_method:-}" || -z "${init_dyn_use:-}" ]]; then
         echo "Error: invalid params line:"
         echo "$line"
         echo "Expected format: dataset_name:bag_start:histogram_method:init_dyn_use"

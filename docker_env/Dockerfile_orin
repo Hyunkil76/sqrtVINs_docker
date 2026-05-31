@@ -1,0 +1,97 @@
+FROM ros:noetic-ros-base-focal
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN=true
+
+# 1. Core build and ROS dependencies, without PCL/RViz/RQT
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    libblas-dev \
+    libglew-dev \
+    liblapack-dev \
+    libopencv-dev \
+    libsuitesparse-dev \
+    libtool \
+    libyaml-cpp-dev \
+    nano \
+    python3-catkin-tools \
+    python3-osrf-pycommon \
+    python3-pip \
+    python3-vcstool \
+    ros-noetic-cv-bridge \
+    ros-noetic-eigen-conversions \
+    ros-noetic-image-transport \
+    ros-noetic-tf-conversions \
+    rsync \
+    wget \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. PCL-related ROS packages, isolated because this is where your build is failing now
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-noetic-pcl-conversions \
+    ros-noetic-pcl-ros \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# 3. Python dependency for resource monitor
+RUN pip3 install --no-cache-dir psutil
+
+# 4. GUI tools, kept separate instead of removed
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-noetic-rqt \
+    ros-noetic-rviz \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# 5. Compiler wrappers
+RUN cat > /usr/local/bin/gcc-filter <<'EOF_GCC'
+#!/usr/bin/env bash
+args=()
+for arg in "$@"; do
+  case "$arg" in
+    -mfpu=neon|-march=armv7-a|-mmmx|-msse|-msse2|-msse3|-mssse3|-mno-avx|-mavx|-mavx2|-mfma)
+      ;;
+    *)
+      args+=("$arg")
+      ;;
+  esac
+done
+exec /usr/bin/gcc "${args[@]}"
+EOF_GCC
+
+RUN cat > /usr/local/bin/gxx-filter <<'EOF_GXX'
+#!/usr/bin/env bash
+args=()
+for arg in "$@"; do
+  case "$arg" in
+    -mfpu=neon|-march=armv7-a|-mmmx|-msse|-msse2|-msse3|-mssse3|-mno-avx|-mavx|-mavx2|-mfma)
+      ;;
+    *)
+      args+=("$arg")
+      ;;
+  esac
+done
+exec /usr/bin/g++ "${args[@]}"
+EOF_GXX
+
+RUN chmod +x /usr/local/bin/gcc-filter /usr/local/bin/gxx-filter
+
+ENV CC=/usr/local/bin/gcc-filter
+ENV CXX=/usr/local/bin/gxx-filter
+
+WORKDIR /root/sqrt_vins
+
+RUN mkdir src && \
+    catkin init && \
+    catkin config --cmake-args \
+      -DCMAKE_C_COMPILER=/usr/local/bin/gcc-filter \
+      -DCMAKE_CXX_COMPILER=/usr/local/bin/gxx-filter
+      
+COPY sqrt_ws/src /root/sqrt_vins/src
+
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin build -j1 -p1 --cmake-args -DCMAKE_CXX_FLAGS='-O0 -g0'"
+      
+CMD ["/bin/bash"]

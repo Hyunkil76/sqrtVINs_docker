@@ -1,0 +1,107 @@
+FROM dustynv/ros:melodic-ros-base-l4t-r32.7.1
+
+ENV DEBIAN_FRONTEND=noninteractive
+SHELL ["/bin/bash", "-c"]
+
+# Refresh the expired ROS key shipped in older L4T ROS images and remove the
+# Kitware source, whose archived Bionic packages frequently break apt updates.
+ADD https://raw.githubusercontent.com/ros/rosdistro/master/ros.key /tmp/ros.key
+RUN apt-key add /tmp/ros.key && \
+    rm /tmp/ros.key && \
+    rm -f /etc/apt/sources.list.d/kitware.list
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    clang \
+    cmake \
+    git \
+    libboost-all-dev \
+    libceres-dev \
+    libeigen3-dev \
+    libopencv-contrib-dev \
+    libopencv-dev \
+    libsuitesparse-dev \
+    nano \
+    python-catkin-tools \
+    python-dev \
+    python-matplotlib \
+    python-numpy \
+    python-osrf-pycommon \
+    python-psutil \
+    python-tk \
+    ros-melodic-cmake-modules \
+    ros-melodic-cv-bridge \
+    ros-melodic-eigen-conversions \
+    ros-melodic-image-transport \
+    ros-melodic-rosbag \
+    ros-melodic-rqt \
+    ros-melodic-rviz \
+    ros-melodic-tf \
+    ros-melodic-tf-conversions \
+    && rm -rf /var/lib/apt/lists/*
+
+# OpenVINS adds some x86/ARMv7-specific flags in places. Keep the source
+# untouched and filter only flags that are invalid for Nano/aarch64.
+RUN cat > /usr/local/bin/gcc-filter <<'EOF'
+#!/usr/bin/env bash
+args=()
+for arg in "$@"; do
+  case "$arg" in
+    -g3)
+      args+=("-g0")
+      ;;
+    -mfpu=neon|-march=armv7-a|-mmmx|-msse|-msse2|-msse3|-mssse3|-mno-avx|-mavx|-mavx2|-mfma)
+      ;;
+    *)
+      args+=("$arg")
+      ;;
+  esac
+done
+exec /usr/bin/clang "${args[@]}"
+EOF
+
+RUN cat > /usr/local/bin/gxx-filter <<'EOF'
+#!/usr/bin/env bash
+args=()
+for arg in "$@"; do
+  case "$arg" in
+    -g3)
+      args+=("-g0")
+      ;;
+    -mfpu=neon|-march=armv7-a|-mmmx|-msse|-msse2|-msse3|-mssse3|-mno-avx|-mavx|-mavx2|-mfma)
+      ;;
+    *)
+      args+=("$arg")
+      ;;
+  esac
+done
+exec /usr/bin/clang++ "${args[@]}"
+EOF
+
+RUN chmod +x /usr/local/bin/gcc-filter /usr/local/bin/gxx-filter
+
+ENV CC=/usr/local/bin/gcc-filter
+ENV CXX=/usr/local/bin/gxx-filter
+
+ARG CATKIN_JOBS=24
+ARG MAKE_JOBS=24
+ARG CATKIN_MEM_LIMIT=100%
+
+WORKDIR /srvins_ws
+COPY ./sqrt_ws/src ./src
+
+RUN source /opt/ros/melodic/setup.bash && \
+    catkin init && \
+    catkin config \
+      --extend /opt/ros/melodic \
+      --cmake-args \
+        -DCMAKE_C_COMPILER=/usr/local/bin/gcc-filter \
+        -DCMAKE_CXX_COMPILER=/usr/local/bin/gxx-filter \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_FLAGS='-mcpu=cortex-a57 -mtune=cortex-a57' \
+        -DCMAKE_C_FLAGS='-mcpu=cortex-a57 -mtune=cortex-a57' && \
+    catkin build \
+      --jobs ${CATKIN_JOBS} \
+      --mem-limit ${CATKIN_MEM_LIMIT} \
+      --summarize \
+      --make-args -j${MAKE_JOBS}

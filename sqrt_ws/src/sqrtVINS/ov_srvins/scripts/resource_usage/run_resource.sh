@@ -171,8 +171,7 @@ for mode in "${modes[@]}"; do
         draw_progress_bar "$current" "$total_runs" "-> Processing: $DATASET"
         python3 "$SCRIPT_DIR/monitor_cpu_only.py" --output "$RESOURCE_DIR/monitor_cpu_only.csv" --interval 0.2 & MONITOR_PID=$!
 
-                
-        roslaunch ov_srvins serial.launch \
+        roslaunch ov_srvins subscribe.launch \
             config:="${CONFIG}" \
             bag:="${BAG_FILE}" \
             path_est:="${PATH_EST}" \
@@ -180,6 +179,9 @@ for mode in "${modes[@]}"; do
             bag_start:="${BAG_START}" \
             max_cameras:="${MAX_CAMERAS}" \
             use_stereo:="${USE_STEREO}" \
+            dobag:=true \
+            dosave:=true \
+            dotime:=true \
             histogram_method:="${HISTOGRAM_METHOD}" \
             init_dyn_use:="${INIT_DYN_USE}" &> /dev/null &
 

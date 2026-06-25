@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-osrf-pycommon \
     python3-pip \
     python3-vcstool \
+    python3-empy \
     ros-noetic-cv-bridge \
     ros-noetic-eigen-conversions \
     ros-noetic-image-transport \
@@ -92,6 +93,6 @@ RUN mkdir src && \
       
 COPY sqrt_ws/src /root/sqrt_vins/src
 
-RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin build -j1 -p1 --cmake-args -DCMAKE_CXX_FLAGS='-O0 -g0'"
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin build -j1 -p1 --cmake-args -DCMAKE_CXX_FLAGS='-O3 -g0'"
       
 CMD ["/bin/bash"]

@@ -110,7 +110,6 @@ Open the `.env` file used by `docker-compose.yaml` and update the paths to match
 Use absolute paths:
 
 ```dotenv
-SQRT_WS_PATH=/absolute/path/to/sqrt_docker/sqrt_ws
 RESULT_PATH=/absolute/path/to/sqrt_docker/result
 DATASET_PATH=/absolute/path/to/sqrt_docker/dataset
 ```

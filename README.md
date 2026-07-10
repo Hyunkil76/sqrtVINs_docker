@@ -303,3 +303,7 @@ This workflow uses [sqrtVINS](https://github.com/rpng/sqrtVINS), developed by th
 We thank the authors and maintainers of both projects for making their work available to the research community.
 
 When using these projects in academic or derivative work, consult their official repositories for the applicable citation and licensing requirements.
+
+### OpenCV Thread Configuration
+
+The resource-usage script explicitly sets `num_opencv_threads` to `4` so that resource consumption is measured with multi-threaded OpenCV processing. All other experiment runs use `num_opencv_threads: 1` from the standard estimator configuration.

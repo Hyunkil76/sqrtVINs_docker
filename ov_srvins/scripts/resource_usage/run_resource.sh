@@ -182,6 +182,8 @@ for mode in "${modes[@]}"; do
             dobag:=true \
             dosave:=true \
             dotime:=true \
+            override_num_opencv_threads:=true\
+            num_opencv_threads:=4 \
             histogram_method:="${HISTOGRAM_METHOD}" \
             init_dyn_use:="${INIT_DYN_USE}" &> /dev/null &
 

@@ -29,6 +29,9 @@
     <arg name="init_dyn_use"   default="false" />
     <arg name="histogram_method"   default="HISTOGRAM" />
 
+    <arg name="override_num_opencv_threads" default="false" />
+    <arg name="num_opencv_threads" default="4" />
+
 
     <!-- MASTER NODE! -->
 <!--    <node name="ov_srvins" pkg="ov_srvins" type="run_subscribe_msckf" output="screen" clear_params="true" required="true" launch-prefix="gdb -ex run &#45;&#45;args">-->
@@ -48,6 +51,8 @@
 
         <param name="init_dyn_use" type="bool"    value="$(arg init_dyn_use)" />
         <param name="histogram_method" type="str"    value="$(arg histogram_method)" />
+
+        <param if="$(arg override_num_opencv_threads)" name="num_opencv_threads" type="int" value="$(arg num_opencv_threads)" />
 
     </node>
 

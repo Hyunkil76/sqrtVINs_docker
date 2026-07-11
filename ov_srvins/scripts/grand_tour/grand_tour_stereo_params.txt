@@ -1,7 +1,7 @@
 # dataset_name:bag_start:histogram_method:init_dyn_use
 # group_1
 2024-10-01-11-29-55:0.0:HISTOGRAM:false
-2024-10-01-11-47-44:0.0:HISTOGRAM:false
+2024-10-01-12-00-49:0.0:HISTOGRAM:false
 2024-11-02-17-10-25:0.0:HISTOGRAM:false
 2024-11-02-17-43-10:0.0:CLAHE:false
 2024-11-02-21-12-51:0.0:CLAHE:true
